@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parent
 PAGES = ("index.html", "license.html", "copyright.html", "support.html", "how-to-use.html")
 APP_URL = "https://github.com/bulentozkir/ydke"
+BRAND_LABEL = "YDKE - Yabancı Dil Kelime Ezberleme"
 STORE_URL = "https://apps.microsoft.com/detail/9N8LFRMX67ZF?hl=neutral&gl=TR&ocid=pdpshare"
 NOTICE = (
     "Required Notice: Copyright 2026 Bulent Ozkir, Ahmet Arda Ozkir, "
@@ -301,7 +302,7 @@ def render(language, page, locales, site_url):
 <body>
   <a class="skip" href="#main">{text(c["skip"])}</a>
   <header class="header wrap">
-    <a class="brand" href="index.html" aria-label="YDKE — {text(c["nav"][0])}"><img src="{assets}favicon.svg" alt="" width="42" height="42">YDKE</a>
+    <a class="brand" href="index.html" aria-label="{text(BRAND_LABEL)} — {text(c["nav"][0])}"><img src="{assets}favicon.svg" alt="" width="42" height="42">{text(BRAND_LABEL)}</a>
     <nav class="nav" aria-label="{text(c["nav"][0])}">{nav}</nav>
     <details class="locale">
       <summary><span aria-hidden="true">◎</span> {text(c["name"])}<span class="sr-only"> — {text(c["language"])}</span></summary>

@@ -32,6 +32,8 @@ parameters.
 The site uses a professional responsive product layout with a navy/indigo palette,
 clear download actions, consistent navigation and accessible focus states. Its
 home-page sample card remains a clearly labelled illustration.
+The header logo is labelled **YDKE - Yabancı Dil Kelime Ezberleme** in every
+website language.
 
 The [how-to guide](https://bulentozkir.github.io/ydke-site/how-to-use.html) has
 **10 chapters and 11 genuine screenshots** of the native YDKE interface:
