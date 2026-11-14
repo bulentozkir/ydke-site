@@ -1,0 +1,249 @@
+{
+    "frames":  [
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  5.1813471502590671,
+                                              "control":  "shell.StudyLanguage",
+                                              "width":  36.274509803921568,
+                                              "height":  7.7720207253886011,
+                                              "x":  15.737874097007223
+                                          },
+                                          {
+                                              "y":  5.1813471502590671,
+                                              "control":  "shell.Level",
+                                              "width":  36.274509803921568,
+                                              "height":  7.7720207253886011,
+                                              "x":  52.115583075335394
+                                          },
+                                          {
+                                              "y":  5.4404145077720205,
+                                              "control":  "shell.WindowMode",
+                                              "width":  8.5655314757481946,
+                                              "height":  6.90846286701209,
+                                              "x":  89.164086687306508
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "toolbar",
+                       "height":  1158,
+                       "image":  "toolbar.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  31.692573402417963,
+                                              "control":  "cards.Start",
+                                              "width":  12.280701754385966,
+                                              "height":  5.4404145077720205,
+                                              "x":  17.182662538699692
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "cards",
+                       "height":  1158,
+                       "image":  "cards.png"
+                   },
+                   {
+                       "image":  "card-reveal.png",
+                       "height":  1158,
+                       "id":  "card-reveal",
+                       "highlights":  [
+                                          {
+                                              "y":  75.561312607944728,
+                                              "control":  "cards.Next",
+                                              "width":  13.261093911248709,
+                                              "height":  5.8721934369602762,
+                                              "x":  44.169246646026835
+                                          },
+                                          {
+                                              "y":  75.906735751295344,
+                                              "control":  "cards.Undo",
+                                              "width":  13.312693498452012,
+                                              "height":  5.1813471502590671,
+                                              "x":  30.082559339525282
+                                          }
+                                      ],
+                       "before":  {
+                                      "highlights":  [
+                                                         {
+                                                             "y":  54.576856649395509,
+                                                             "control":  "cards.Reveal",
+                                                             "width":  67.234262125902987,
+                                                             "height":  5.5267702936096716,
+                                                             "x":  17.182662538699692
+                                                         },
+                                                         {
+                                                             "y":  63.039723661485318,
+                                                             "control":  "cards.Next",
+                                                             "width":  13.261093911248709,
+                                                             "height":  5.1813471502590671,
+                                                             "x":  44.169246646026835
+                                                         }
+                                                     ],
+                                      "width":  1938,
+                                      "id":  "card-hidden",
+                                      "height":  1158,
+                                      "image":  "card-hidden.png"
+                                  },
+                       "width":  1938
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  31.692573402417963,
+                                              "control":  "quiz.ExamPicker",
+                                              "width":  67.234262125902987,
+                                              "height":  49.222797927461137,
+                                              "x":  17.182662538699692
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "quiz-picker",
+                       "height":  1158,
+                       "image":  "quiz-picker.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  77.89291882556131,
+                                              "control":  "quiz.Continue",
+                                              "width":  67.750257997936018,
+                                              "height":  5.8721934369602762,
+                                              "x":  16.976264189886482
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "quiz-answer",
+                       "height":  1158,
+                       "image":  "quiz-answer.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  24.352331606217618,
+                                              "control":  "library.Search",
+                                              "width":  57.533539731682147,
+                                              "height":  5.1813471502590671,
+                                              "x":  15.995872033023735
+                                          },
+                                          {
+                                              "y":  35.146804835924009,
+                                              "control":  "library.Filter.Favorites",
+                                              "width":  16.873065015479877,
+                                              "height":  5.1813471502590671,
+                                              "x":  15.995872033023735
+                                          },
+                                          {
+                                              "y":  34.715025906735754,
+                                              "control":  "library.Filter.Known",
+                                              "width":  16.92466460268318,
+                                              "height":  5.9585492227979273,
+                                              "x":  33.539731682146545
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "words",
+                       "height":  1158,
+                       "image":  "words.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  51.986183074265973,
+                                              "control":  "game.Start",
+                                              "width":  6.7595459236326105,
+                                              "height":  5.3540587219343694,
+                                              "x":  17.440660474716204
+                                          },
+                                          {
+                                              "y":  14.939550949913643,
+                                              "control":  "game.Rules",
+                                              "width":  9.8555211558307541,
+                                              "height":  5.094991364421416,
+                                              "x":  75.799793601651189
+                                          },
+                                          {
+                                              "y":  14.939550949913643,
+                                              "control":  "game.Hint",
+                                              "width":  5.9339525283797734,
+                                              "height":  5.094991364421416,
+                                              "x":  69.3498452012384
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "games",
+                       "height":  1158,
+                       "image":  "games.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  20.725388601036268,
+                                              "control":  "stats.Sections",
+                                              "width":  69.6594427244582,
+                                              "height":  5.1813471502590671,
+                                              "x":  15.995872033023735
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "statistics",
+                       "height":  1158,
+                       "image":  "statistics.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  28.497409326424872,
+                                              "control":  "settings.UiLanguage",
+                                              "width":  68.008255933952526,
+                                              "height":  7.9447322970639034,
+                                              "x":  16.821465428276575
+                                          },
+                                          {
+                                              "y":  44.732297063903282,
+                                              "control":  "settings.DailyGoal",
+                                              "width":  33.07533539731682,
+                                              "height":  8.8082901554404138,
+                                              "x":  17.079463364293087
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "settings",
+                       "height":  1158,
+                       "image":  "settings.png"
+                   },
+                   {
+                       "highlights":  [
+                                          {
+                                              "y":  21.848013816925732,
+                                              "control":  "help.Screen",
+                                              "width":  16.821465428276575,
+                                              "height":  6.90846286701209,
+                                              "x":  15.995872033023735
+                                          },
+                                          {
+                                              "y":  21.848013816925732,
+                                              "control":  "help.Cards",
+                                              "width":  16.769865841073273,
+                                              "height":  6.90846286701209,
+                                              "x":  33.591331269349844
+                                          },
+                                          {
+                                              "y":  30.051813471502591,
+                                              "control":  "help.Widget",
+                                              "width":  16.821465428276575,
+                                              "height":  6.8221070811744386,
+                                              "x":  68.833849329205364
+                                          }
+                                      ],
+                       "width":  1938,
+                       "id":  "help",
+                       "height":  1158,
+                       "image":  "help.png"
+                   }
+               ],
+    "captureMethod":  "Window-only PrintWindow, isolated --test-mode profile",
+    "appVersion":  "1.0.0+ae6acc34cdca1f562a55306721e4ea49de2642c2",
+    "interfaceLanguage":  "tr"
+}
