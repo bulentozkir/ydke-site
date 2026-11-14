@@ -21,10 +21,11 @@ Product facts and legal summaries were checked against the local YDKE repository
 at `C:\GitHub\ydke`, specifically its README, `ExperienceStrings.cs`, license,
 notice and privacy policy. The path originally supplied, `C:\gitrepo\ydke`, was
 not present. The example card is an illustration, not a screenshot or an
-embedded version of the app. Every localized homepage links to the
+embedded version of the app. Every localized homepage and guide page links
+exclusively to the
 [YDKE Microsoft Store listing](https://apps.microsoft.com/detail/9N8LFRMX67ZF?hl=neutral&gl=TR&ocid=pdpshare)
-provided by the publisher, retaining the supplied URL parameters. The GitHub
-release listing remains available as a separate download option.
+provided by the publisher to install the app, retaining the supplied URL
+parameters.
 
 ## Design and interactive app guide
 

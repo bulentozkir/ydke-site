@@ -112,18 +112,22 @@ class WebsiteTests(unittest.TestCase):
                 for tag, attrs in PageParser(file.read_text(encoding="utf-8")).elements
             ))
 
-    def test_store_link_on_every_homepage_preserves_url_and_download_options(self):
+    def test_store_link_is_only_install_option_on_every_homepage(self):
         expected_url = "https://apps.microsoft.com/detail/9N8LFRMX67ZF?hl=neutral&gl=TR&ocid=pdpshare"
         for code, content in self.locales.items():
             with self.subTest(language=code):
                 html = (self.output / build.page_path(code, "index.html")).read_text(encoding="utf-8")
                 links = [attrs for tag, attrs in PageParser(html).elements if tag == "a"]
                 store_links = [attrs for attrs in links if attrs.get("href") == expected_url]
-                self.assertEqual(len(store_links), 1)
-                self.assertEqual(store_links[0]["class"], "button")
+                self.assertEqual(len(store_links), 2)
+                self.assertTrue(all(link["class"] == "button" for link in store_links))
                 self.assertIn(build.text(content["store"]), html)
                 self.assertIn("&amp;gl=TR&amp;ocid=pdpshare", html)
-                self.assertTrue(any(attrs.get("href") == build.APP_URL + "/releases" for attrs in links))
+                self.assertFalse(any(
+                    attrs.get("href") in {build.APP_URL, build.APP_URL + "/releases"}
+                    for attrs in links
+                ))
+                self.assertNotIn("İndirme seçenekleri", html)
 
     def test_legal_and_support_pages_use_authoritative_sources(self):
         for code in self.locales:

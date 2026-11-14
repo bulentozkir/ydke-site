@@ -73,7 +73,6 @@ def home(c):
         <p class="lead">{text(c["intro"])}</p>
         <div class="actions">
           {link(STORE_URL, c["store"] + " ↗", "button")}
-          {link(APP_URL + "/releases", c["download"] + " ↗", "button secondary")}
         </div>
         <p class="platform">{text(c["platform"])}</p>
         {link("#features", c["explore"] + " ↓", "text-link hero-link")}
@@ -116,7 +115,7 @@ def home(c):
     </section>
     <section class="cta">
       <div><h2>{text(c["ctaTitle"])}</h2><p>{text(c["ctaText"])}</p></div>
-      {link(APP_URL, c["source"] + " ↗", "button")}
+      {link(STORE_URL, c["store"] + " ↗", "button")}
     </section>"""
 
 
