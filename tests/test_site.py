@@ -34,7 +34,7 @@ class WebsiteTests(unittest.TestCase):
         cls.temp.cleanup()
 
     def test_all_localized_pages_and_metadata(self):
-        self.assertEqual(len(list(self.output.rglob("*.html"))), 40)
+        self.assertEqual(len(list(self.output.rglob("*.html"))), 48)
         for code, content in self.locales.items():
             for index, page in enumerate(build.PAGES):
                 with self.subTest(language=code, page=page):
@@ -67,6 +67,40 @@ class WebsiteTests(unittest.TestCase):
                             ((self.output / build.page_path(code, page)).parent / language_links[other_code]).resolve(),
                             target.resolve(),
                         )
+
+    def test_privacy_navigation_precedes_support_on_every_page(self):
+        labels = {
+            "tr": "Gizlilik", "en": "Privacy", "de": "Datenschutz",
+            "fr": "Confidentialité", "es": "Privacidad", "pt": "Privacidade",
+            "nl": "Privacy", "it": "Privacy",
+        }
+        for code, label in labels.items():
+            for page in build.PAGES:
+                with self.subTest(language=code, page=page):
+                    html = (self.output / build.page_path(code, page)).read_text(encoding="utf-8")
+                    nav = html.split('<nav class="nav"', 1)[1].split("</nav>", 1)[0]
+                    links = [attrs for tag, attrs in PageParser(nav).elements if tag == "a"]
+                    targets = [attrs["href"] for attrs in links]
+                    self.assertEqual(targets.count("privacy.html"), 1)
+                    self.assertEqual(targets[targets.index("privacy.html") + 1], "support.html")
+                    self.assertIn(f'>{build.text(label)}</a>', nav)
+                    self.assertEqual([
+                        attrs["href"] for attrs in links if attrs.get("aria-current") == "page"
+                    ], [page])
+
+    def test_privacy_pages_reuse_localized_content_and_authoritative_policies(self):
+        for code, content in self.locales.items():
+            with self.subTest(language=code):
+                html = (self.output / build.page_path(code, "privacy.html")).read_text(encoding="utf-8")
+                self.assertIn(f'<h1>{build.text(content["privacyTitle"])}</h1>', html)
+                self.assertIn(build.text(content["privacyText"]), html)
+                links = [attrs["href"] for tag, attrs in PageParser(html).elements if tag == "a"]
+                self.assertIn(
+                    "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+                    links,
+                )
+                self.assertIn(build.APP_URL + "/blob/main/PRIVACY.MD", links)
+                self.assertNotIn(build.APP_URL + "/issues/new", links)
 
     def test_internal_links_assets_and_fragments_resolve(self):
         for file in self.output.rglob("*.html"):
@@ -161,6 +195,10 @@ class WebsiteTests(unittest.TestCase):
                 self.assertTrue(all("hidden" not in attrs for attrs in states))
                 self.assertIn(build.STORE_URL, [attrs.get("href") for tag, attrs in elements if tag == "a"])
                 self.assertIn(build.text(content["guide"]["recordingNote"]), html)
+                self.assertIn(
+                    f'<a href="support.html" class="text-link">{build.text(content["nav"][4])}</a>',
+                    html,
+                )
                 for control in ("data-tour-play", "data-tour-previous", "data-tour-next", "data-tour-restart", "data-tour-reveal"):
                     self.assertTrue(any(tag == "button" and control in attrs and attrs.get("type") == "button" for tag, attrs in elements))
                 home = (self.output / build.page_path(code, "index.html")).read_text(encoding="utf-8")
@@ -199,8 +237,8 @@ class WebsiteTests(unittest.TestCase):
         namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
         sitemap = ElementTree.parse(self.output / "sitemap.xml")
         urls = [node.text for node in sitemap.findall("s:url/s:loc", namespace)]
-        self.assertEqual(len(urls), 40)
-        self.assertEqual(len(set(urls)), 40)
+        self.assertEqual(len(urls), 48)
+        self.assertEqual(len(set(urls)), 48)
         self.assertTrue(all(url.startswith(self.url + "/") for url in urls))
         self.assertIn(self.url + "/sitemap.xml", (self.output / "robots.txt").read_text())
         self.assertTrue((self.output / ".nojekyll").is_file())

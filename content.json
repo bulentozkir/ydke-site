@@ -35,7 +35,7 @@
         ["Yardıma ve widget’a ulaş", "Yardım’da bir konu seç; kısa sayfalarda oku veya Bu ekranı aç ile ilgili bölüme geç. Masaüstü Widget’ı menüsü isteğe bağlı günün kelimesi notunu açar.", "Yardım · Konu düğmeleri · Bu ekranı aç", "Widget’ın çevrimiçi YZ içeriği isteğe bağlıdır. Çevrimdışı kelime kartı için YZ gerekmez; widget etkinleşince Windows ile başlangıç tercihini kontrol et."]
       ]
     },
-    "nav": ["Ana sayfa", "Lisans", "Telif hakkı", "Destek"],
+    "nav": ["Ana sayfa", "Lisans", "Telif hakkı", "Gizlilik", "Destek"],
     "skip": "İçeriğe geç",
     "language": "Site dili",
     "tagline": "Yabancı Dil Kelime Ezberleme",
@@ -120,7 +120,7 @@
     "privacyText": "Bu site hesap, iletişim formu, reklam, analiz betiği veya takip çerezi kullanmaz. GitHub Pages barındırma için ziyaretçilerin IP adreslerini güvenlik amacıyla kaydedebilir. Harici bağlantılar ilgili hizmetlerin koşullarına tabidir.",
     "hostPrivacy": "GitHub gizlilik bildirimi",
     "appPrivacy": "YDKE uygulama gizlilik politikası",
-    "descriptions": ["Türk öğrenciler için çevrimdışı Windows kelime öğrenme uygulaması YDKE’yi keşfet. 7 öğrenme dili, A1–C2, kartlar, testler ve 25 oyun.", "YDKE’nin PolyForm Noncommercial lisansı, ticari kullanım izni ve dağıtım koşulları.", "YDKE telif bildirimi, Wiktionary ve Tatoeba atıfları ve üçüncü taraf lisansları.", "YDKE için uygulama içi yardım, sorun bildirimi, iletişim ve sık sorulan sorular."]
+    "descriptions": ["Türk öğrenciler için çevrimdışı Windows kelime öğrenme uygulaması YDKE’yi keşfet. 7 öğrenme dili, A1–C2, kartlar, testler ve 25 oyun.", "YDKE’nin PolyForm Noncommercial lisansı, ticari kullanım izni ve dağıtım koşulları.", "YDKE telif bildirimi, Wiktionary ve Tatoeba atıfları ve üçüncü taraf lisansları.", "YDKE tanıtım sitesinin gizliliği, GitHub Pages barındırma bilgileri ve uygulama gizlilik politikasına bağlantı.", "YDKE için uygulama içi yardım, sorun bildirimi, iletişim ve sık sorulan sorular."]
   },
   "en": {
     "name": "English",
@@ -158,7 +158,7 @@
         ["Find help and the widget", "Choose a Help topic, read its short pages or use Open this screen. The Desktop Widget menu opens the optional daily-word note.", "Help · Topic buttons · Open this screen", "Online AI widget content is optional. The offline word card needs no AI; check the Windows-start preference when enabling the widget."]
       ]
     },
-    "nav": ["Home", "License", "Copyright", "Support"],
+    "nav": ["Home", "License", "Copyright", "Privacy", "Support"],
     "skip": "Skip to content",
     "language": "Site language",
     "tagline": "Foreign-language vocabulary learning",
@@ -243,7 +243,7 @@
     "privacyText": "This site has no accounts, contact forms, advertisements, analytics scripts or tracking cookies. GitHub Pages may log visitor IP addresses for hosting security. External links are subject to the respective services’ terms.",
     "hostPrivacy": "GitHub privacy statement",
     "appPrivacy": "YDKE app privacy policy",
-    "descriptions": ["Discover YDKE, the offline Windows vocabulary app for Turkish students: 7 study languages, A1–C2, cards, quizzes and 25 games.", "YDKE’s PolyForm Noncommercial license, commercial permission and distribution terms.", "YDKE copyright notice, Wiktionary and Tatoeba credits and third-party licenses.", "In-app help, issue reporting, contact information and frequently asked questions for YDKE."]
+    "descriptions": ["Discover YDKE, the offline Windows vocabulary app for Turkish students: 7 study languages, A1–C2, cards, quizzes and 25 games.", "YDKE’s PolyForm Noncommercial license, commercial permission and distribution terms.", "YDKE copyright notice, Wiktionary and Tatoeba credits and third-party licenses.", "Privacy information for the YDKE website, GitHub Pages hosting and the app privacy policy.", "In-app help, issue reporting, contact information and frequently asked questions for YDKE."]
   },
   "de": {
     "name": "Deutsch",
@@ -281,7 +281,7 @@
         ["Hilfe und Widget finden", "Wähle ein Hilfethema, lies kurze Seiten oder öffne den zugehörigen Bildschirm. Desktop-Widget öffnet die optionale Tageswort-Notiz.", "Hilfe · Themen · Diesen Bildschirm öffnen", "Online-KI-Inhalte sind optional. Die Offline-Karte braucht keine KI; prüfe beim Aktivieren den Windows-Autostart."]
       ]
     },
-    "nav": ["Startseite", "Lizenz", "Urheberrecht", "Hilfe"],
+    "nav": ["Startseite", "Lizenz", "Urheberrecht", "Datenschutz", "Hilfe"],
     "skip": "Zum Inhalt springen",
     "language": "Sprache der Website",
     "tagline": "Fremdsprachenwortschatz lernen",
@@ -366,7 +366,7 @@
     "privacyText": "Diese Website verwendet keine Konten, Kontaktformulare, Werbung, Analyseskripte oder Tracking-Cookies. GitHub Pages kann IP-Adressen für die Sicherheit des Hostings protokollieren. Für externe Links gelten die Bedingungen der jeweiligen Dienste.",
     "hostPrivacy": "GitHub-Datenschutzerklärung",
     "appPrivacy": "Datenschutz der YDKE-App",
-    "descriptions": ["Entdecke YDKE, die Offline-Windows-Vokabel-App für türkische Lernende: 7 Lernsprachen, A1–C2, Karten, Quiz und 25 Spiele.", "YDKE: PolyForm Noncommercial, kommerzielle Erlaubnis und Weitergabebedingungen.", "Urheberrecht, Wiktionary- und Tatoeba-Quellen und Lizenzen Dritter für YDKE.", "Hilfe, Problemmeldung, Kontakt und häufige Fragen zu YDKE."]
+    "descriptions": ["Entdecke YDKE, die Offline-Windows-Vokabel-App für türkische Lernende: 7 Lernsprachen, A1–C2, Karten, Quiz und 25 Spiele.", "YDKE: PolyForm Noncommercial, kommerzielle Erlaubnis und Weitergabebedingungen.", "Urheberrecht, Wiktionary- und Tatoeba-Quellen und Lizenzen Dritter für YDKE.", "Datenschutz der YDKE-Website, GitHub Pages als Hosting-Dienst und die Datenschutzerklärung der App.", "Hilfe, Problemmeldung, Kontakt und häufige Fragen zu YDKE."]
   },
   "fr": {
     "name": "Français",
@@ -404,7 +404,7 @@
         ["Trouver aide et widget", "Choisis un sujet d’aide, lis ses pages ou ouvre l’écran correspondant. Widget de bureau ouvre la note facultative du jour.", "Aide · Sujets · Ouvrir cet écran", "L’IA en ligne est facultative. La carte hors ligne n’en a pas besoin ; vérifie le démarrage avec Windows."]
       ]
     },
-    "nav": ["Accueil", "Licence", "Droits d’auteur", "Assistance"],
+    "nav": ["Accueil", "Licence", "Droits d’auteur", "Confidentialité", "Assistance"],
     "skip": "Aller au contenu",
     "language": "Langue du site",
     "tagline": "Apprendre le vocabulaire des langues étrangères",
@@ -489,7 +489,7 @@
     "privacyText": "Ce site n’utilise ni comptes, formulaires de contact, publicités, scripts d’analyse ni cookies de suivi. GitHub Pages peut enregistrer les adresses IP pour la sécurité de l’hébergement. Les liens externes relèvent des conditions des services concernés.",
     "hostPrivacy": "Confidentialité de GitHub",
     "appPrivacy": "Confidentialité de l’application YDKE",
-    "descriptions": ["Découvre YDKE, l’application Windows de vocabulaire hors ligne pour les élèves turcs : 7 langues, A1–C2, cartes, quiz et 25 jeux.", "Licence PolyForm Noncommercial de YDKE, autorisation commerciale et distribution.", "Droits d’auteur YDKE, crédits Wiktionary et Tatoeba, licences tierces.", "Aide, signalement de problèmes, contact et questions fréquentes pour YDKE."]
+    "descriptions": ["Découvre YDKE, l’application Windows de vocabulaire hors ligne pour les élèves turcs : 7 langues, A1–C2, cartes, quiz et 25 jeux.", "Licence PolyForm Noncommercial de YDKE, autorisation commerciale et distribution.", "Droits d’auteur YDKE, crédits Wiktionary et Tatoeba, licences tierces.", "Confidentialité du site YDKE, hébergement GitHub Pages et politique de confidentialité de l’application.", "Aide, signalement de problèmes, contact et questions fréquentes pour YDKE."]
   },
   "es": {
     "name": "Español",
@@ -527,7 +527,7 @@
         ["Encuentra ayuda y widget", "Elige un tema de Ayuda, lee sus páginas o abre la pantalla correspondiente. Widget de escritorio abre la nota opcional del día.", "Ayuda · Temas · Abrir esta pantalla", "La IA en línea es opcional. La tarjeta sin conexión no la necesita; revisa el inicio con Windows."]
       ]
     },
-    "nav": ["Inicio", "Licencia", "Derechos de autor", "Ayuda"],
+    "nav": ["Inicio", "Licencia", "Derechos de autor", "Privacidad", "Ayuda"],
     "skip": "Ir al contenido",
     "language": "Idioma del sitio",
     "tagline": "Aprende vocabulario de idiomas extranjeros",
@@ -612,7 +612,7 @@
     "privacyText": "Este sitio no utiliza cuentas, formularios de contacto, anuncios, scripts de análisis ni cookies de seguimiento. GitHub Pages puede registrar direcciones IP por seguridad del alojamiento. Los enlaces externos están sujetos a los términos de sus servicios.",
     "hostPrivacy": "Privacidad de GitHub",
     "appPrivacy": "Privacidad de la aplicación YDKE",
-    "descriptions": ["Descubre YDKE, la aplicación Windows de vocabulario sin conexión para estudiantes turcos: 7 idiomas, A1–C2, tarjetas, pruebas y 25 juegos.", "Licencia PolyForm Noncommercial de YDKE, permiso comercial y distribución.", "Derechos de autor YDKE, créditos de Wiktionary y Tatoeba y licencias de terceros.", "Ayuda, informes de problemas, contacto y preguntas frecuentes sobre YDKE."]
+    "descriptions": ["Descubre YDKE, la aplicación Windows de vocabulario sin conexión para estudiantes turcos: 7 idiomas, A1–C2, tarjetas, pruebas y 25 juegos.", "Licencia PolyForm Noncommercial de YDKE, permiso comercial y distribución.", "Derechos de autor YDKE, créditos de Wiktionary y Tatoeba y licencias de terceros.", "Privacidad del sitio YDKE, alojamiento de GitHub Pages y política de privacidad de la aplicación.", "Ayuda, informes de problemas, contacto y preguntas frecuentes sobre YDKE."]
   },
   "pt": {
     "name": "Português",
@@ -650,7 +650,7 @@
         ["Encontra ajuda e widget", "Escolhe um tópico de Ajuda, lê as páginas ou abre o ecrã correspondente. Widget de ambiente de trabalho abre a nota opcional do dia.", "Ajuda · Tópicos · Abrir este ecrã", "A IA online é opcional. O cartão offline não precisa dela; verifica o início com o Windows."]
       ]
     },
-    "nav": ["Início", "Licença", "Direitos de autor", "Apoio"],
+    "nav": ["Início", "Licença", "Direitos de autor", "Privacidade", "Apoio"],
     "skip": "Saltar para o conteúdo",
     "language": "Idioma do site",
     "tagline": "Aprender vocabulário de línguas estrangeiras",
@@ -735,7 +735,7 @@
     "privacyText": "Este site não usa contas, formulários de contacto, anúncios, scripts de análise ou cookies de rastreio. O GitHub Pages pode registar endereços IP para segurança do alojamento. As ligações externas seguem os termos dos respetivos serviços.",
     "hostPrivacy": "Privacidade do GitHub",
     "appPrivacy": "Privacidade da aplicação YDKE",
-    "descriptions": ["Descobre o YDKE, a aplicação Windows de vocabulário offline para estudantes turcos: 7 línguas, A1–C2, cartões, testes e 25 jogos.", "Licença PolyForm Noncommercial do YDKE, permissão comercial e distribuição.", "Direitos de autor do YDKE, créditos Wiktionary e Tatoeba e licenças de terceiros.", "Ajuda, comunicação de problemas, contacto e perguntas frequentes do YDKE."]
+    "descriptions": ["Descobre o YDKE, a aplicação Windows de vocabulário offline para estudantes turcos: 7 línguas, A1–C2, cartões, testes e 25 jogos.", "Licença PolyForm Noncommercial do YDKE, permissão comercial e distribuição.", "Direitos de autor do YDKE, créditos Wiktionary e Tatoeba e licenças de terceiros.", "Privacidade do site YDKE, alojamento no GitHub Pages e política de privacidade da aplicação.", "Ajuda, comunicação de problemas, contacto e perguntas frequentes do YDKE."]
   },
   "nl": {
     "name": "Nederlands",
@@ -773,7 +773,7 @@
         ["Vind hulp en widget", "Kies een Help-onderwerp, lees de pagina’s of open het bijbehorende scherm. Desktopwidget opent het optionele dagwoord.", "Help · Onderwerpen · Dit scherm openen", "Online AI is optioneel. De offline kaart heeft geen AI nodig; controleer starten met Windows."]
       ]
     },
-    "nav": ["Home", "Licentie", "Auteursrecht", "Ondersteuning"],
+    "nav": ["Home", "Licentie", "Auteursrecht", "Privacy", "Ondersteuning"],
     "skip": "Ga naar inhoud",
     "language": "Taal van de website",
     "tagline": "Woordenschat van vreemde talen leren",
@@ -858,7 +858,7 @@
     "privacyText": "Deze website heeft geen accounts, contactformulieren, advertenties, analysescripts of trackingcookies. GitHub Pages kan IP-adressen vastleggen voor hostingbeveiliging. Externe links vallen onder de voorwaarden van hun diensten.",
     "hostPrivacy": "Privacyverklaring van GitHub",
     "appPrivacy": "Privacybeleid van de YDKE-app",
-    "descriptions": ["Ontdek YDKE, de offline Windows-woordenschatapp voor Turkse leerlingen: 7 leertalen, A1–C2, kaarten, quizzen en 25 spellen.", "YDKE PolyForm Noncommercial-licentie, commerciële toestemming en verspreiding.", "YDKE auteursrecht, Wiktionary- en Tatoeba-bronnen en licenties van derden.", "Hulp, problemen melden, contact en veelgestelde vragen over YDKE."]
+    "descriptions": ["Ontdek YDKE, de offline Windows-woordenschatapp voor Turkse leerlingen: 7 leertalen, A1–C2, kaarten, quizzen en 25 spellen.", "YDKE PolyForm Noncommercial-licentie, commerciële toestemming en verspreiding.", "YDKE auteursrecht, Wiktionary- en Tatoeba-bronnen en licenties van derden.", "Privacy van de YDKE-website, hosting door GitHub Pages en het privacybeleid van de app.", "Hulp, problemen melden, contact en veelgestelde vragen over YDKE."]
   },
   "it": {
     "name": "Italiano",
@@ -896,7 +896,7 @@
         ["Trova aiuto e widget", "Scegli un argomento di Aiuto, leggi le pagine o apri la schermata corrispondente. Widget desktop apre la nota opzionale del giorno.", "Aiuto · Argomenti · Apri questa schermata", "L’IA online è facoltativa. La scheda offline non la richiede; controlla l’avvio con Windows."]
       ]
     },
-    "nav": ["Home", "Licenza", "Diritto d’autore", "Assistenza"],
+    "nav": ["Home", "Licenza", "Diritto d’autore", "Privacy", "Assistenza"],
     "skip": "Vai al contenuto",
     "language": "Lingua del sito",
     "tagline": "Imparare il lessico delle lingue straniere",
@@ -981,6 +981,6 @@
     "privacyText": "Questo sito non usa account, moduli di contatto, pubblicità, script di analisi o cookie di tracciamento. GitHub Pages può registrare gli indirizzi IP per la sicurezza dell’hosting. I link esterni sono soggetti ai termini dei rispettivi servizi.",
     "hostPrivacy": "Privacy di GitHub",
     "appPrivacy": "Privacy dell’app YDKE",
-    "descriptions": ["Scopri YDKE, l’app Windows di vocaboli offline per studenti turchi: 7 lingue, A1–C2, schede, quiz e 25 giochi.", "Licenza PolyForm Noncommercial di YDKE, permesso commerciale e distribuzione.", "Diritto d’autore YDKE, crediti Wiktionary e Tatoeba e licenze di terzi.", "Aiuto, segnalazioni, contatti e domande frequenti su YDKE."]
+    "descriptions": ["Scopri YDKE, l’app Windows di vocaboli offline per studenti turchi: 7 lingue, A1–C2, schede, quiz e 25 giochi.", "Licenza PolyForm Noncommercial di YDKE, permesso commerciale e distribuzione.", "Diritto d’autore YDKE, crediti Wiktionary e Tatoeba e licenze di terzi.", "Privacy del sito YDKE, hosting di GitHub Pages e informativa sulla privacy dell’app.", "Aiuto, segnalazioni, contatti e domande frequenti su YDKE."]
   }
 }

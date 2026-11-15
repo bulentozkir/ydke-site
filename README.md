@@ -7,11 +7,15 @@ analytics, cookies or account system.
 
 ## Languages and pages
 
-Home, license, copyright, support and **Show me how to use the app** pages are available in Turkish, English,
+Home, license, copyright, privacy, support and **Show me how to use the app** pages are available in Turkish, English,
 German, French, Spanish, Portuguese, Dutch and Italian. Turkish is always the
 default at the site root; other languages have their own directories. The language
 menu preserves the current page, works without JavaScript and never automatically
 overrides the visitor's choice.
+
+The shared toolbar places **Privacy** immediately before **Support**. The privacy
+page presents the localized site privacy summary and links to the GitHub hosting
+and YDKE app policies.
 
 YDKE has seven **interface** languages (all the above except Italian). Its seven
 **study** languages include Italian but not Turkish. The website covers their

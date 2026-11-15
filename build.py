@@ -10,7 +10,7 @@ import struct
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent
-PAGES = ("index.html", "license.html", "copyright.html", "support.html", "how-to-use.html")
+PAGES = ("index.html", "license.html", "copyright.html", "privacy.html", "support.html", "how-to-use.html")
 APP_URL = "https://github.com/bulentozkir/ydke"
 BRAND_LABEL = "YDKE - Yabancı Dil Kelime Ezberleme"
 STORE_URL = "https://apps.microsoft.com/detail/9N8LFRMX67ZF?hl=neutral&gl=TR&ocid=pdpshare"
@@ -120,12 +120,22 @@ def home(c):
     </section>"""
 
 
+def privacy_links(c):
+    return f"""
+      <div class="legal-links">
+        {link("https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement", c["hostPrivacy"])}
+        {link(APP_URL + "/blob/main/PRIVACY.MD", c["appPrivacy"])}
+      </div>"""
+
+
 def document(c, page):
     kind = page.removesuffix(".html")
     title = c[f"{kind}Title"]
-    intro = c[f"{kind}Intro"]
+    intro = c["privacyText"] if kind == "privacy" else c[f"{kind}Intro"]
     label = c["supportLabel"] if kind == "support" else c["legalLabel"]
     header = f'<p class="eyebrow">{text(label)}</p><h1>{text(title)}</h1><p class="lead">{text(intro)}</p>'
+    if kind == "privacy":
+        return header + privacy_links(c)
     if kind == "license":
         return header + sections(c["licenseSections"]) + f"""
         <div class="legal-links">
@@ -164,10 +174,7 @@ def document(c, page):
     <section class="document-section faq"><h2>{text(c["faqTitle"])}</h2>{faqs}</section>
     <section class="document-section">
       <h2>{text(c["privacyTitle"])}</h2><p>{text(c["privacyText"])}</p>
-      <div class="legal-links">
-        {link("https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement", c["hostPrivacy"])}
-        {link(APP_URL + "/blob/main/PRIVACY.MD", c["appPrivacy"])}
-      </div>
+      {privacy_links(c)}
     </section>"""
 
 
@@ -252,7 +259,7 @@ def guide_page(c, language):
       <div><h2>{text(guide["startTitle"])}</h2><p>{text(guide["startText"])}</p></div>
       <div class="guide-links">
         {link(STORE_URL, c["store"] + " ↗", "button")}
-        {link("support.html", c["nav"][3], "text-link")}
+        {link("support.html", c["nav"][PAGES.index("support.html")], "text-link")}
       </div>
     </section>"""
 
