@@ -95,9 +95,11 @@ For a different public URL:
 python build.py --site-url https://example.com
 ```
 
-This updates canonical links, language alternates, the sitemap and robots file.
-For a custom domain, configure that domain in GitHub Pages and update the build
-command in the workflow accordingly.
+This updates canonical links, language alternates, localized social-sharing
+metadata, homepage SoftwareApplication structured data, the sitemap and robots
+file. Homepage canonicals use directory URLs (for example, `/` and `/en/`) to
+avoid duplicate `index.html` addresses. For a custom domain, configure that
+domain in GitHub Pages and update the build command in the workflow accordingly.
 
 ## Publish to GitHub Pages
 

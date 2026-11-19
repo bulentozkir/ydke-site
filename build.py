@@ -19,6 +19,17 @@ NOTICE = (
     "Halit Eren Ozkir (YDKE - Yabancı Dil Kelime Ezberleme)"
 )
 CONTACT = "bulentozkir@hotmail.com"
+SOCIAL_IMAGE = "assets/tour/cards.png"
+LOCALES = {
+    "tr": "tr_TR",
+    "en": "en_US",
+    "de": "de_DE",
+    "fr": "fr_FR",
+    "es": "es_ES",
+    "pt": "pt_PT",
+    "nl": "nl_NL",
+    "it": "it_IT",
+}
 
 
 def text(value):
@@ -27,6 +38,16 @@ def text(value):
 
 def page_path(language, page):
     return page if language == "tr" else f"{language}/{page}"
+
+
+def canonical_path(language, page):
+    if page == "index.html":
+        return "" if language == "tr" else f"{language}/"
+    return page_path(language, page)
+
+
+def absolute_page_url(language, page, site_url):
+    return site_url.rstrip("/") + "/" + canonical_path(language, page)
 
 
 def relative_path(language, target):
@@ -270,9 +291,9 @@ def render(language, page, locales, site_url):
     nav_labels = [*c["nav"], c["guide"]["nav"]]
     description = c["guide"]["description"] if page == "how-to-use.html" else c["descriptions"][index]
     title = "YDKE — " + (c["tagline"] if index == 0 else c["guide"]["title"] if page == "how-to-use.html" else c["nav"][index])
-    canonical = site_url + "/" + page_path(language, page)
+    canonical = absolute_page_url(language, page, site_url)
     alternates = "\n".join(
-        f'<link rel="alternate" hreflang="{code}" href="{text(site_url + "/" + page_path(code, page))}">'
+        f'<link rel="alternate" hreflang="{code}" href="{text(absolute_page_url(code, page, site_url))}">'
         for code in locales
     )
     nav = "".join(
@@ -287,6 +308,27 @@ def render(language, page, locales, site_url):
     assets = relative_path(language, "assets/")
     footer = "".join(link(target, label) for target, label in zip(PAGES[1:], nav_labels[1:], strict=True))
     main_content = home(c) if index == 0 else guide_page(c, language) if page == "how-to-use.html" else document(c, page)
+    social_image = site_url.rstrip("/") + "/" + SOCIAL_IMAGE
+    locale_alternates = "\n".join(
+        f'  <meta property="og:locale:alternate" content="{text(locale)}">'
+        for code, locale in LOCALES.items() if code != language
+    )
+    structured_data = ""
+    if page == "index.html":
+        structured_data = json.dumps(
+            {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": BRAND_LABEL,
+                "description": description,
+                "url": canonical,
+                "image": social_image,
+                "operatingSystem": "Windows 10 version 1809 or later, Windows 11",
+                "applicationCategory": "EducationalApplication",
+                "downloadUrl": STORE_URL,
+            },
+            ensure_ascii=False,
+        ).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang="{language}">
 <head>
@@ -296,14 +338,28 @@ def render(language, page, locales, site_url):
   <meta name="description" content="{text(description)}">
   <meta name="theme-color" content="#3652cb">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="YDKE">
+  <meta property="og:locale" content="{text(LOCALES[language])}">
+  {locale_alternates}
   <meta property="og:title" content="{text(title)}">
   <meta property="og:description" content="{text(description)}">
   <meta property="og:url" content="{text(canonical)}">
+  <meta property="og:image" content="{text(social_image)}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1938">
+  <meta property="og:image:height" content="1158">
+  <meta property="og:image:alt" content="{text(c["socialImageAlt"])}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{text(title)}">
+  <meta name="twitter:description" content="{text(description)}">
+  <meta name="twitter:image" content="{text(social_image)}">
+  <meta name="twitter:image:alt" content="{text(c["socialImageAlt"])}">
   <link rel="canonical" href="{text(canonical)}">
   {alternates}
-  <link rel="alternate" hreflang="x-default" href="{text(site_url + "/" + page_path("tr", page))}">
+  <link rel="alternate" hreflang="x-default" href="{text(absolute_page_url("tr", page, site_url))}">
   <link rel="icon" type="image/svg+xml" href="{assets}favicon.svg">
   <link rel="stylesheet" href="{assets}site.css">
+  {"<script type=\"application/ld+json\">" + structured_data + "</script>" if structured_data else ""}
   <script defer src="{assets}site.js"></script>
 </head>
 <body>
@@ -398,7 +454,7 @@ def build(output, site_url):
     shutil.copytree(ROOT / "assets", output / "assets", dirs_exist_ok=True)
     shutil.copyfile(ROOT / ".nojekyll", output / ".nojekyll")
     urls = "".join(
-        f"<url><loc>{text(site_url + '/' + page_path(code, page))}</loc></url>"
+        f"<url><loc>{text(absolute_page_url(code, page, site_url))}</loc></url>"
         for code in locales for page in PAGES
     )
     (output / "sitemap.xml").write_text(

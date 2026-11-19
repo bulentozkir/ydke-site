@@ -47,7 +47,7 @@ class WebsiteTests(unittest.TestCase):
                         attrs.get("content") for tag, attrs in elements
                         if tag == "meta" and attrs.get("name") == "description"
                     ])
-                    self.assertIn(self.url + "/" + build.page_path(code, page), [
+                    self.assertIn(build.absolute_page_url(code, page, self.url), [
                         attrs.get("href") for tag, attrs in elements
                         if tag == "link" and attrs.get("rel") == "canonical"
                     ])
@@ -56,7 +56,17 @@ class WebsiteTests(unittest.TestCase):
                         if tag == "link" and attrs.get("rel") == "alternate"
                     }
                     self.assertEqual(set(alternates), set(self.locales) | {"x-default"})
-                    self.assertEqual(alternates["x-default"], self.url + "/" + page)
+                    self.assertEqual(alternates["x-default"], build.absolute_page_url("tr", page, self.url))
+                    meta = {
+                        attrs.get("name") or attrs.get("property"): attrs.get("content")
+                        for tag, attrs in elements if tag == "meta"
+                    }
+                    self.assertEqual(meta["og:url"], build.absolute_page_url(code, page, self.url))
+                    self.assertEqual(meta["og:image"], self.url + "/" + build.SOCIAL_IMAGE)
+                    self.assertEqual(meta["twitter:card"], "summary_large_image")
+                    self.assertEqual(meta["twitter:image"], meta["og:image"])
+                    self.assertEqual(meta["og:image:alt"], content["socialImageAlt"])
+                    self.assertEqual(meta["twitter:image:alt"], content["socialImageAlt"])
                     language_links = {
                         attrs["hreflang"]: attrs["href"] for tag, attrs in elements
                         if tag == "a" and "hreflang" in attrs
@@ -67,6 +77,24 @@ class WebsiteTests(unittest.TestCase):
                             ((self.output / build.page_path(code, page)).parent / language_links[other_code]).resolve(),
                             target.resolve(),
                         )
+
+    def test_homepages_have_software_structured_data_and_canonical_directory_urls(self):
+        for code, content in self.locales.items():
+            with self.subTest(language=code):
+                html = (self.output / build.page_path(code, "index.html")).read_text(encoding="utf-8")
+                script = html.split('<script type="application/ld+json">', 1)[1].split("</script>", 1)[0]
+                structured_data = json.loads(script)
+                self.assertEqual(structured_data["@context"], "https://schema.org")
+                self.assertEqual(structured_data["@type"], "SoftwareApplication")
+                self.assertEqual(structured_data["name"], build.BRAND_LABEL)
+                self.assertEqual(structured_data["description"], content["descriptions"][0])
+                self.assertEqual(structured_data["url"], build.absolute_page_url(code, "index.html", self.url))
+                self.assertEqual(structured_data["downloadUrl"], build.STORE_URL)
+                self.assertNotIn("index.html", structured_data["url"])
+        self.assertNotIn(
+            '<script type="application/ld+json">',
+            (self.output / "support.html").read_text(encoding="utf-8"),
+        )
 
     def test_privacy_navigation_precedes_support_on_every_page(self):
         labels = {
@@ -240,6 +268,10 @@ class WebsiteTests(unittest.TestCase):
         self.assertEqual(len(urls), 48)
         self.assertEqual(len(set(urls)), 48)
         self.assertTrue(all(url.startswith(self.url + "/") for url in urls))
+        self.assertIn(self.url + "/", urls)
+        self.assertIn(self.url + "/en/", urls)
+        self.assertNotIn(self.url + "/index.html", urls)
+        self.assertNotIn(self.url + "/en/index.html", urls)
         self.assertIn(self.url + "/sitemap.xml", (self.output / "robots.txt").read_text())
         self.assertTrue((self.output / ".nojekyll").is_file())
         html = build.render("de", "support.html", self.locales, "https://example.com/custom")
