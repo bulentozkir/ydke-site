@@ -14,10 +14,32 @@ class PageParser(HTMLParser):
     def __init__(self, html):
         super().__init__(convert_charrefs=True)
         self.elements = []
+        self.title = ""
+        self.json_ld = []
+        self._current_tag = None
+        self._buffer = []
         self.feed(html)
 
     def handle_starttag(self, tag, attrs):
-        self.elements.append((tag, dict(attrs)))
+        attr_map = dict(attrs)
+        self.elements.append((tag, attr_map))
+        if tag == "title" or (tag == "script" and attr_map.get("type") == "application/ld+json"):
+            self._current_tag = tag
+            self._buffer = []
+
+    def handle_data(self, data):
+        if self._current_tag:
+            self._buffer.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == self._current_tag:
+            text_value = "".join(self._buffer)
+            if tag == "title":
+                self.title = text_value
+            else:
+                self.json_ld.append(json.loads(text_value))
+            self._current_tag = None
+            self._buffer = []
 
 
 class WebsiteTests(unittest.TestCase):
@@ -35,14 +57,26 @@ class WebsiteTests(unittest.TestCase):
 
     def test_all_localized_pages_and_metadata(self):
         self.assertEqual(len(list(self.output.rglob("*.html"))), 48)
+        titles = []
+        descriptions = []
         for code, content in self.locales.items():
             for index, page in enumerate(build.PAGES):
                 with self.subTest(language=code, page=page):
                     html = (self.output / build.page_path(code, page)).read_text(encoding="utf-8")
-                    elements = PageParser(html).elements
+                    parser = PageParser(html)
+                    elements = parser.elements
                     self.assertIn(("html", {"lang": code}), elements)
                     self.assertEqual(sum(tag == "h1" for tag, _ in elements), 1)
+                    headings = [int(tag[1]) for tag, _ in elements if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}]
+                    self.assertEqual(headings[0], 1)
+                    for prev_level, next_level in zip(headings, headings[1:]):
+                        self.assertLessEqual(next_level, prev_level + 1, f"Skipped heading level: {headings}")
+                    self.assertNotIn('class=""', html)
+                    self.assertEqual(parser.title, build.page_title(content, page))
+                    self.assertTrue(25 <= len(parser.title) <= 70, parser.title)
+                    titles.append(parser.title)
                     description = content["guide"]["description"] if page == "how-to-use.html" else content["descriptions"][index]
+                    descriptions.append(description)
                     self.assertIn(description, [
                         attrs.get("content") for tag, attrs in elements
                         if tag == "meta" and attrs.get("name") == "description"
@@ -50,6 +84,10 @@ class WebsiteTests(unittest.TestCase):
                     self.assertIn(build.absolute_page_url(code, page, self.url), [
                         attrs.get("href") for tag, attrs in elements
                         if tag == "link" and attrs.get("rel") == "canonical"
+                    ])
+                    self.assertIn(self.url + "/sitemap.xml", [
+                        attrs.get("href") for tag, attrs in elements
+                        if tag == "link" and attrs.get("rel") == "sitemap"
                     ])
                     alternates = {
                         attrs["hreflang"]: attrs["href"] for tag, attrs in elements
@@ -61,8 +99,12 @@ class WebsiteTests(unittest.TestCase):
                         attrs.get("name") or attrs.get("property"): attrs.get("content")
                         for tag, attrs in elements if tag == "meta"
                     }
+                    self.assertEqual(meta["robots"], build.ROBOTS_DIRECTIVE)
+                    self.assertEqual(meta["og:title"], parser.title)
+                    self.assertEqual(meta["twitter:title"], parser.title)
                     self.assertEqual(meta["og:url"], build.absolute_page_url(code, page, self.url))
                     self.assertEqual(meta["og:image"], self.url + "/" + build.SOCIAL_IMAGE)
+                    self.assertEqual(meta["og:image:secure_url"], meta["og:image"])
                     self.assertEqual(meta["twitter:card"], "summary_large_image")
                     self.assertEqual(meta["twitter:image"], meta["og:image"])
                     self.assertEqual(meta["og:image:alt"], content["socialImageAlt"])
@@ -77,24 +119,51 @@ class WebsiteTests(unittest.TestCase):
                             ((self.output / build.page_path(code, page)).parent / language_links[other_code]).resolve(),
                             target.resolve(),
                         )
+        self.assertEqual(len(set(titles)), 48)
+        self.assertEqual(len(set(descriptions)), 48)
 
-    def test_homepages_have_software_structured_data_and_canonical_directory_urls(self):
+    def test_structured_data_across_all_page_types(self):
         for code, content in self.locales.items():
-            with self.subTest(language=code):
-                html = (self.output / build.page_path(code, "index.html")).read_text(encoding="utf-8")
-                script = html.split('<script type="application/ld+json">', 1)[1].split("</script>", 1)[0]
-                structured_data = json.loads(script)
-                self.assertEqual(structured_data["@context"], "https://schema.org")
-                self.assertEqual(structured_data["@type"], "SoftwareApplication")
-                self.assertEqual(structured_data["name"], build.BRAND_LABEL)
-                self.assertEqual(structured_data["description"], content["descriptions"][0])
-                self.assertEqual(structured_data["url"], build.absolute_page_url(code, "index.html", self.url))
-                self.assertEqual(structured_data["downloadUrl"], build.STORE_URL)
-                self.assertNotIn("index.html", structured_data["url"])
-        self.assertNotIn(
-            '<script type="application/ld+json">',
-            (self.output / "support.html").read_text(encoding="utf-8"),
-        )
+            for page in build.PAGES:
+                with self.subTest(language=code, page=page):
+                    html = (self.output / build.page_path(code, page)).read_text(encoding="utf-8")
+                    blocks = PageParser(html).json_ld
+                    self.assertEqual(len(blocks), 2)
+                    canonical = build.absolute_page_url(code, page, self.url)
+                    if page == "index.html":
+                        app_ld, site_ld = blocks
+                        self.assertEqual(app_ld["@context"], "https://schema.org")
+                        self.assertEqual(app_ld["@type"], "SoftwareApplication")
+                        self.assertEqual(app_ld["name"], build.BRAND_LABEL)
+                        self.assertEqual(app_ld["description"], content["descriptions"][0])
+                        self.assertEqual(app_ld["url"], canonical)
+                        self.assertEqual(app_ld["downloadUrl"], build.STORE_URL)
+                        self.assertEqual(len(app_ld["screenshot"]), 10)
+                        self.assertEqual(len(app_ld["featureList"]), 6)
+                        self.assertNotIn("index.html", app_ld["url"])
+                        self.assertEqual(site_ld["@type"], "WebSite")
+                        self.assertEqual(site_ld["url"], canonical)
+                        self.assertEqual(site_ld["inLanguage"], code)
+                    else:
+                        breadcrumb_ld, page_ld = blocks
+                        self.assertNotEqual(page_ld["@type"], "SoftwareApplication")
+                        self.assertEqual(breadcrumb_ld["@type"], "BreadcrumbList")
+                        self.assertEqual(len(breadcrumb_ld["itemListElement"]), 2)
+                        self.assertEqual(
+                            breadcrumb_ld["itemListElement"][0]["item"],
+                            build.absolute_page_url(code, "index.html", self.url),
+                        )
+                        self.assertEqual(breadcrumb_ld["itemListElement"][1]["item"], canonical)
+                        if page == "how-to-use.html":
+                            self.assertEqual(page_ld["@type"], "HowTo")
+                            self.assertEqual(len(page_ld["step"]), 10)
+                            self.assertEqual(page_ld["step"][0]["url"], canonical + "#tour-step-1")
+                        elif page == "support.html":
+                            self.assertEqual(page_ld["@type"], "FAQPage")
+                            self.assertEqual(len(page_ld["mainEntity"]), len(content["faqs"]))
+                        else:
+                            self.assertEqual(page_ld["@type"], "WebPage")
+                            self.assertEqual(page_ld["url"], canonical)
 
     def test_privacy_navigation_precedes_support_on_every_page(self):
         labels = {
@@ -134,7 +203,7 @@ class WebsiteTests(unittest.TestCase):
         for file in self.output.rglob("*.html"):
             parser = PageParser(file.read_text(encoding="utf-8"))
             for tag, attrs in parser.elements:
-                for key in ("href", "src", "aria-controls"):
+                for key in ("href", "src", "aria-controls", "aria-labelledby"):
                     value = attrs.get(key)
                     if not value:
                         continue
@@ -143,7 +212,7 @@ class WebsiteTests(unittest.TestCase):
                         continue
                     with self.subTest(file=file.relative_to(self.output), link=value):
                         self.assertFalse(value.startswith("/"), "Project-site links must be relative")
-                        if key == "aria-controls":
+                        if key in {"aria-controls", "aria-labelledby"}:
                             target = file
                             fragment = value
                         else:
@@ -218,6 +287,9 @@ class WebsiteTests(unittest.TestCase):
                 captures = [attrs for tag, attrs in elements if tag == "img" and "/tour/" in attrs.get("src", "")]
                 self.assertEqual(len(captures), 11)
                 self.assertTrue(all(attrs["alt"] and int(attrs["width"]) >= 800 and int(attrs["height"]) >= 600 for attrs in captures))
+                self.assertEqual(captures[0].get("loading"), "eager")
+                self.assertEqual(captures[0].get("fetchpriority"), "high")
+                self.assertTrue(all(c.get("loading") == "lazy" and c.get("decoding") == "async" for c in captures[1:]))
                 states = [attrs for _, attrs in elements if "data-tour-state" in attrs]
                 self.assertEqual({attrs["data-tour-state"] for attrs in states}, {"before", "after"})
                 self.assertTrue(all("hidden" not in attrs for attrs in states))
@@ -262,9 +334,14 @@ class WebsiteTests(unittest.TestCase):
                         build.load_content()
 
     def test_sitemap_and_custom_project_path(self):
-        namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        namespace = {
+            "s": "http://www.sitemaps.org/schemas/sitemap/0.9",
+            "xhtml": "http://www.w3.org/1999/xhtml",
+            "image": "http://www.google.com/schemas/sitemap-image/1.1",
+        }
         sitemap = ElementTree.parse(self.output / "sitemap.xml")
-        urls = [node.text for node in sitemap.findall("s:url/s:loc", namespace)]
+        url_nodes = sitemap.findall("s:url", namespace)
+        urls = [node.findtext("s:loc", namespaces=namespace) for node in url_nodes]
         self.assertEqual(len(urls), 48)
         self.assertEqual(len(set(urls)), 48)
         self.assertTrue(all(url.startswith(self.url + "/") for url in urls))
@@ -272,6 +349,19 @@ class WebsiteTests(unittest.TestCase):
         self.assertIn(self.url + "/en/", urls)
         self.assertNotIn(self.url + "/index.html", urls)
         self.assertNotIn(self.url + "/en/index.html", urls)
+        for node in url_nodes:
+            lastmod = node.findtext("s:lastmod", namespaces=namespace)
+            self.assertRegex(lastmod, r"^\d{4}-\d{2}-\d{2}$")
+            xhtml_links = {
+                link.attrib["hreflang"]: link.attrib["href"]
+                for link in node.findall("xhtml:link", namespace)
+            }
+            self.assertEqual(set(xhtml_links), set(self.locales) | {"x-default"})
+        image_locs = [
+            node.text for node in sitemap.findall("s:url/image:image/image:loc", namespace)
+        ]
+        self.assertEqual(len(image_locs), 8 * 1 + 8 * 11)
+        self.assertTrue(all(loc.startswith(self.url + "/assets/tour/") for loc in image_locs))
         self.assertIn(self.url + "/sitemap.xml", (self.output / "robots.txt").read_text())
         self.assertTrue((self.output / ".nojekyll").is_file())
         html = build.render("de", "support.html", self.locales, "https://example.com/custom")

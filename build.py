@@ -1,6 +1,7 @@
 """Build a dependency-free, localized GitHub Pages website."""
 
 import argparse
+from datetime import datetime, timezone
 from html import escape
 import json
 import math
@@ -14,6 +15,10 @@ PAGES = ("index.html", "license.html", "copyright.html", "privacy.html", "suppor
 APP_URL = "https://github.com/bulentozkir/ydke"
 BRAND_LABEL = "YDKE - Yabancı Dil Kelime Ezberleme"
 STORE_URL = "https://apps.microsoft.com/detail/9N8LFRMX67ZF?hl=neutral&gl=TR&ocid=pdpshare"
+LICENSE_URL = "https://polyformproject.org/licenses/noncommercial/1.0.0"
+AUTHORS = ("Bulent Ozkir", "Ahmet Arda Ozkir", "Halit Eren Ozkir")
+INTERFACE_LANGUAGES = ("tr", "en", "de", "fr", "es", "pt", "nl")
+ROBOTS_DIRECTIVE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
 NOTICE = (
     "Required Notice: Copyright 2026 Bulent Ozkir, Ahmet Arda Ozkir, "
     "Halit Eren Ozkir (YDKE - Yabancı Dil Kelime Ezberleme)"
@@ -55,15 +60,30 @@ def relative_path(language, target):
 
 
 def link(url, label, css=""):
-    return f'<a href="{text(url)}" class="{text(css)}">{text(label)}</a>'
+    cls = f' class="{text(css)}"' if css else ""
+    return f'<a href="{text(url)}"{cls}>{text(label)}</a>'
 
 
-def sections(items):
+def sections(items, prefix="section"):
     return "".join(
-        f'<section class="document-section"><h2>{text(title)}</h2>'
+        f'<section class="document-section" id="{prefix}-{index}" aria-labelledby="{prefix}-title-{index}">'
+        f'<h2 id="{prefix}-title-{index}">{text(title)}</h2>'
         f"<p>{text(body)}</p></section>"
-        for title, body in items
+        for index, (title, body) in enumerate(items, 1)
     )
+
+
+def page_title(c, page):
+    if page == "index.html":
+        return f"YDKE — {c['tagline']} | Windows"
+    if page == "how-to-use.html":
+        return f"{c['guide']['title']} — YDKE"
+    if page == "support.html":
+        return f"{c['nav'][PAGES.index('support.html')]} — {c['supportTitle']} | YDKE"
+    if page == "copyright.html":
+        return f"{c['copyrightTitle']} — YDKE"
+    kind = page.removesuffix(".html")
+    return f"{c[f'{kind}Title']} — {BRAND_LABEL}"
 
 
 def home(c):
@@ -88,10 +108,10 @@ def home(c):
     hero_title = text(hero_parts[0]) + "<br><span>" + text(" ".join(hero_parts[1:])) + "</span>"
     translated_example = "" if c["example"] == "I flourish with small steps every day." else f'<p>{text(c["example"])}</p>'
     return f"""
-    <section class="hero">
+    <section class="hero" aria-labelledby="hero-title">
       <div>
         <p class="eyebrow">{text(c["eyebrow"])}</p>
-        <h1>{hero_title}</h1>
+        <h1 id="hero-title">{hero_title}</h1>
         <p class="lead">{text(c["intro"])}</p>
         <div class="actions">
           {link(STORE_URL, c["store"] + " ↗", "button")}
@@ -121,22 +141,22 @@ def home(c):
       </figure>
     </section>
     <div class="stats">{stats}</div>
-    <section class="section" id="features">
+    <section class="section" id="features" aria-labelledby="features-title">
       <p class="eyebrow">{text(c["featuresLabel"])}</p>
-      <h2>{text(c["featuresTitle"])}</h2>
+      <h2 id="features-title">{text(c["featuresTitle"])}</h2>
       <p class="section-intro">{text(c["featuresIntro"])}</p>
       <div class="features">{features}</div>
     </section>
-    <section class="language-section">
-      <div><p class="eyebrow">{text(c["languagesLabel"])}</p><h2>{text(c["languagesTitle"])}</h2><p class="section-intro">{text(c["languagesIntro"])}</p></div>
+    <section class="language-section" id="languages" aria-labelledby="languages-title">
+      <div><p class="eyebrow">{text(c["languagesLabel"])}</p><h2 id="languages-title">{text(c["languagesTitle"])}</h2><p class="section-intro">{text(c["languagesIntro"])}</p></div>
       <div><div class="language-list">{languages}</div><div class="levels">{levels}</div><p class="language-note">{text(c["interfaceNote"])}</p></div>
     </section>
-    <section class="section">
-      <p class="eyebrow">{text(c["stepsLabel"])}</p>
+    <section class="section" id="getting-started" aria-labelledby="steps-title">
+      <h2 class="eyebrow" id="steps-title">{text(c["stepsLabel"])}</h2>
       <ol class="steps">{steps}</ol>
     </section>
-    <section class="cta">
-      <div><h2>{text(c["ctaTitle"])}</h2><p>{text(c["ctaText"])}</p></div>
+    <section class="cta" id="download" aria-labelledby="cta-title">
+      <div><h2 id="cta-title">{text(c["ctaTitle"])}</h2><p>{text(c["ctaText"])}</p></div>
       {link(STORE_URL, c["store"] + " ↗", "button")}
     </section>"""
 
@@ -158,10 +178,10 @@ def document(c, page):
     if kind == "privacy":
         return header + privacy_links(c)
     if kind == "license":
-        return header + sections(c["licenseSections"]) + f"""
+        return header + sections(c["licenseSections"], "license") + f"""
         <div class="legal-links">
           {link(APP_URL + "/blob/main/LICENSE.md", c["fullLicense"])}
-          {link("https://polyformproject.org/licenses/noncommercial/1.0.0", c["officialLicense"])}
+          {link(LICENSE_URL, c["officialLicense"])}
           {link("mailto:" + CONTACT, c["permission"])}
         </div>"""
     if kind == "copyright":
@@ -177,31 +197,32 @@ def document(c, page):
             )
         )
         return header + f"""
-        <section class="document-section"><h2>{text(c["requiredNotice"])}</h2><p class="notice" lang="en">{text(NOTICE)}</p></section>
-        <section class="document-section"><h2>{text(c["attributionTitle"])}</h2><ul class="attribution">{credits}</ul>{link(APP_URL + "/blob/main/NOTICE.md", c["noticeLink"])}</section>
-        """ + sections([(c["trademarkTitle"], c["trademarkText"])])
+        <section class="document-section" id="required-notice" aria-labelledby="notice-title"><h2 id="notice-title">{text(c["requiredNotice"])}</h2><p class="notice" lang="en">{text(NOTICE)}</p></section>
+        <section class="document-section" id="attributions" aria-labelledby="attribution-title"><h2 id="attribution-title">{text(c["attributionTitle"])}</h2><ul class="attribution">{credits}</ul>{link(APP_URL + "/blob/main/NOTICE.md", c["noticeLink"])}</section>
+        """ + sections([(c["trademarkTitle"], c["trademarkText"])], "trademark")
     faqs = "".join(
         f"<details><summary>{text(question)}</summary><p>{text(answer)}</p></details>"
         for question, answer in c["faqs"]
     )
-    return header + sections([(c["helpTitle"], c["helpText"])]) + f"""
-    <section class="document-section">
-      <h2>{text(c["issueTitle"])}</h2><p>{text(c["issueText"])}</p>
+    return header + sections([(c["helpTitle"], c["helpText"])], "in-app-help") + f"""
+    <section class="document-section" id="report-issue" aria-labelledby="issue-title">
+      <h2 id="issue-title">{text(c["issueTitle"])}</h2><p>{text(c["issueText"])}</p>
       {link(APP_URL + "/issues/new", c["issueLink"] + " ↗", "button")}
     </section>
-    <section class="document-section">
-      <h2>{text(c["contactTitle"])}</h2><p>{text(c["contactText"])}</p>{link("mailto:" + CONTACT, CONTACT)}
+    <section class="document-section" id="contact" aria-labelledby="contact-title">
+      <h2 id="contact-title">{text(c["contactTitle"])}</h2><p>{text(c["contactText"])}</p>{link("mailto:" + CONTACT, CONTACT)}
     </section>
-    <section class="document-section faq"><h2>{text(c["faqTitle"])}</h2>{faqs}</section>
-    <section class="document-section">
-      <h2>{text(c["privacyTitle"])}</h2><p>{text(c["privacyText"])}</p>
+    <section class="document-section faq" id="faq" aria-labelledby="faq-title"><h2 id="faq-title">{text(c["faqTitle"])}</h2>{faqs}</section>
+    <section class="document-section" id="site-privacy" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">{text(c["privacyTitle"])}</h2><p>{text(c["privacyText"])}</p>
       {privacy_links(c)}
     </section>"""
 
 
-def guide_page(c, language):
+def guide_page(c, language, frames=None):
     guide = c["guide"]
-    frames = load_tour()
+    if frames is None:
+        frames = load_tour()
     steps = []
     chapters = []
 
@@ -211,10 +232,12 @@ def guide_page(c, language):
             for box in frame["highlights"]
         )
         url = relative_path(language, "assets/tour/" + frame["image"])
+        state_attr = f' data-tour-state="{text(state)}"' if state else ""
+        loading_attrs = 'loading="eager" fetchpriority="high"' if frame["id"] == "toolbar" else 'loading="lazy" decoding="async"'
         return f"""
-          <div class="tour-image"{" data-tour-state=" + text(state) if state else ""}>
+          <div class="tour-image"{state_attr}>
             <a href="{url}" aria-label="{text(guide["openImage"] + ' — ' + title)}">
-              <img src="{url}" alt="{text(title + ' — ' + control)}" width="{frame["width"]}" height="{frame["height"]}" loading="{"eager" if frame["id"] == "toolbar" else "lazy"}">
+              <img src="{url}" alt="{text(title + ' — ' + control)}" width="{frame["width"]}" height="{frame["height"]}" {loading_attrs}>
             </a>
             {boxes}
           </div>"""
@@ -272,12 +295,12 @@ def guide_page(c, language):
         <p class="small tour-motion">{text(guide["motionNote"])}</p>
       </div>
     </div>
-    <section class="section keyboard-section">
-      <p class="eyebrow">YDKE / WINDOWS</p><h2>{text(guide["keysTitle"])}</h2>
+    <section class="section keyboard-section" id="keyboard-shortcuts" aria-labelledby="keys-title">
+      <p class="eyebrow">YDKE / WINDOWS</p><h2 id="keys-title">{text(guide["keysTitle"])}</h2>
       <ul class="keyboard-list">{keyboard}</ul>
     </section>
-    <section class="cta">
-      <div><h2>{text(guide["startTitle"])}</h2><p>{text(guide["startText"])}</p></div>
+    <section class="cta" id="download" aria-labelledby="guide-cta-title">
+      <div><h2 id="guide-cta-title">{text(guide["startTitle"])}</h2><p>{text(guide["startText"])}</p></div>
       <div class="guide-links">
         {link(STORE_URL, c["store"] + " ↗", "button")}
         {link("support.html", c["nav"][PAGES.index("support.html")], "text-link")}
@@ -285,14 +308,146 @@ def guide_page(c, language):
     </section>"""
 
 
-def render(language, page, locales, site_url):
+def structured_data_scripts(language, page, c, description, canonical, site_url, frames, app_version):
+    site_root = site_url.rstrip("/")
+    home_url = absolute_page_url(language, "index.html", site_url)
+    nav_labels = [*c["nav"], c["guide"]["nav"]]
+    index = PAGES.index(page)
+    authors_ld = [{"@type": "Person", "name": name} for name in AUTHORS]
+    if page == "index.html":
+        blocks = [
+            {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "@id": f"{site_root}/#software",
+                "name": BRAND_LABEL,
+                "alternateName": "YDKE",
+                "description": description,
+                "url": canonical,
+                "image": f"{site_root}/{SOCIAL_IMAGE}",
+                "screenshot": [f"{site_root}/assets/tour/{frame['image']}" for frame in frames],
+                "operatingSystem": "Windows 10 version 1809 or later, Windows 11",
+                "processorRequirements": "x64, ARM64",
+                "applicationCategory": "EducationalApplication",
+                "applicationSubCategory": "Language Learning",
+                "inLanguage": list(INTERFACE_LANGUAGES),
+                "featureList": [f"{title}: {body}" for title, body in c["features"]],
+                "softwareVersion": app_version,
+                "license": LICENSE_URL,
+                "downloadUrl": STORE_URL,
+                "installUrl": STORE_URL,
+                "sameAs": [STORE_URL, APP_URL],
+                "author": authors_ld,
+                "copyrightHolder": authors_ld,
+                "copyrightYear": 2026,
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "@id": f"{site_root}/#website",
+                "name": "YDKE",
+                "alternateName": BRAND_LABEL,
+                "description": description,
+                "url": canonical,
+                "inLanguage": language,
+            },
+        ]
+    else:
+        breadcrumb = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": c["nav"][0],
+                    "item": home_url,
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": nav_labels[index],
+                    "item": canonical,
+                },
+            ],
+        }
+        if page == "how-to-use.html":
+            page_ld = {
+                "@context": "https://schema.org",
+                "@type": "HowTo",
+                "name": c["guide"]["title"],
+                "description": description,
+                "url": canonical,
+                "inLanguage": language,
+                "image": f"{site_root}/assets/tour/toolbar.png",
+                "step": [
+                    {
+                        "@type": "HowToStep",
+                        "position": number,
+                        "name": step_title,
+                        "text": step_description,
+                        "url": f"{canonical}#tour-step-{number}",
+                        "image": f"{site_root}/assets/tour/{frame['image']}",
+                    }
+                    for number, (frame, (step_title, step_description, _, _)) in enumerate(
+                        zip(frames, c["guide"]["steps"], strict=True), 1
+                    )
+                ],
+            }
+        elif page == "support.html":
+            page_ld = {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "name": c["supportTitle"],
+                "description": description,
+                "url": canonical,
+                "inLanguage": language,
+                "isPartOf": {"@id": f"{site_root}/#website"},
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": question,
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": answer,
+                        },
+                    }
+                    for question, answer in c["faqs"]
+                ],
+            }
+        else:
+            kind = page.removesuffix(".html")
+            page_ld = {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                "name": c[f"{kind}Title"],
+                "description": description,
+                "url": canonical,
+                "inLanguage": language,
+                "isPartOf": {"@id": f"{site_root}/#website"},
+            }
+        blocks = [breadcrumb, page_ld]
+    return "\n  ".join(
+        '<script type="application/ld+json">'
+        + json.dumps(block, ensure_ascii=False).replace("</", "<\\/")
+        + "</script>"
+        for block in blocks
+    )
+
+
+def render(language, page, locales, site_url, tour_manifest=None):
     c = locales[language]
+    if tour_manifest is None:
+        tour_manifest = load_tour_manifest()
+    frames = tour_manifest["frames"]
+    app_version = tour_manifest["appVersion"].split("+", 1)[0]
     index = PAGES.index(page)
     nav_labels = [*c["nav"], c["guide"]["nav"]]
     description = c["guide"]["description"] if page == "how-to-use.html" else c["descriptions"][index]
-    title = "YDKE — " + (c["tagline"] if index == 0 else c["guide"]["title"] if page == "how-to-use.html" else c["nav"][index])
+    title = page_title(c, page)
+    site_root = site_url.rstrip("/")
     canonical = absolute_page_url(language, page, site_url)
-    alternates = "\n".join(
+    alternates = "\n  ".join(
         f'<link rel="alternate" hreflang="{code}" href="{text(absolute_page_url(code, page, site_url))}">'
         for code in locales
     )
@@ -307,28 +462,15 @@ def render(language, page, locales, site_url):
     )
     assets = relative_path(language, "assets/")
     footer = "".join(link(target, label) for target, label in zip(PAGES[1:], nav_labels[1:], strict=True))
-    main_content = home(c) if index == 0 else guide_page(c, language) if page == "how-to-use.html" else document(c, page)
-    social_image = site_url.rstrip("/") + "/" + SOCIAL_IMAGE
-    locale_alternates = "\n".join(
-        f'  <meta property="og:locale:alternate" content="{text(locale)}">'
+    main_content = home(c) if index == 0 else guide_page(c, language, frames) if page == "how-to-use.html" else document(c, page)
+    social_image = site_root + "/" + SOCIAL_IMAGE
+    locale_alternates = "\n  ".join(
+        f'<meta property="og:locale:alternate" content="{text(locale)}">'
         for code, locale in LOCALES.items() if code != language
     )
-    structured_data = ""
-    if page == "index.html":
-        structured_data = json.dumps(
-            {
-                "@context": "https://schema.org",
-                "@type": "SoftwareApplication",
-                "name": BRAND_LABEL,
-                "description": description,
-                "url": canonical,
-                "image": social_image,
-                "operatingSystem": "Windows 10 version 1809 or later, Windows 11",
-                "applicationCategory": "EducationalApplication",
-                "downloadUrl": STORE_URL,
-            },
-            ensure_ascii=False,
-        ).replace("</", "<\\/")
+    structured_data = structured_data_scripts(
+        language, page, c, description, canonical, site_url, frames, app_version
+    )
     return f"""<!doctype html>
 <html lang="{language}">
 <head>
@@ -336,6 +478,10 @@ def render(language, page, locales, site_url):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{text(title)}</title>
   <meta name="description" content="{text(description)}">
+  <meta name="robots" content="{ROBOTS_DIRECTIVE}">
+  <meta name="author" content="{text(", ".join(AUTHORS))}">
+  <meta name="application-name" content="YDKE">
+  <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#3652cb">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="YDKE">
@@ -345,6 +491,7 @@ def render(language, page, locales, site_url):
   <meta property="og:description" content="{text(description)}">
   <meta property="og:url" content="{text(canonical)}">
   <meta property="og:image" content="{text(social_image)}">
+  <meta property="og:image:secure_url" content="{text(social_image)}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1938">
   <meta property="og:image:height" content="1158">
@@ -357,15 +504,16 @@ def render(language, page, locales, site_url):
   <link rel="canonical" href="{text(canonical)}">
   {alternates}
   <link rel="alternate" hreflang="x-default" href="{text(absolute_page_url("tr", page, site_url))}">
-  <link rel="icon" type="image/svg+xml" href="{assets}favicon.svg">
+  <link rel="sitemap" type="application/xml" href="{text(site_root + "/sitemap.xml")}">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="{assets}favicon.svg">
   <link rel="stylesheet" href="{assets}site.css">
-  {"<script type=\"application/ld+json\">" + structured_data + "</script>" if structured_data else ""}
+  {structured_data}
   <script defer src="{assets}site.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">{text(c["skip"])}</a>
   <header class="header wrap">
-    <a class="brand" href="index.html" aria-label="{text(BRAND_LABEL)} — {text(c["nav"][0])}"><img src="{assets}favicon.svg" alt="" width="42" height="42">{text(BRAND_LABEL)}</a>
+    <a class="brand" href="index.html" aria-label="{text(BRAND_LABEL)} — {text(c["nav"][0])}"><img src="{assets}favicon.svg" alt="" width="42" height="42" decoding="async">{text(BRAND_LABEL)}</a>
     <nav class="nav" aria-label="{text(c["nav"][0])}">{nav}</nav>
     <details class="locale">
       <summary><span aria-hidden="true">◎</span> {text(c["name"])}<span class="sr-only"> — {text(c["language"])}</span></summary>
@@ -385,7 +533,7 @@ def render(language, page, locales, site_url):
 """
 
 
-def load_tour():
+def load_tour_manifest():
     folder = ROOT / "assets" / "tour"
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
     expected = ("toolbar", "cards", "card-reveal", "quiz-picker", "quiz-answer", "words", "games", "statistics", "settings", "help")
@@ -409,7 +557,11 @@ def load_tour():
                     raise ValueError(f"Invalid control coordinates: {path.name}")
                 if min(values) < 0 or box["width"] <= 0 or box["height"] <= 0 or box["x"] + box["width"] > 100 or box["y"] + box["height"] > 100:
                     raise ValueError(f"Control outside recording: {path.name}")
-    return frames
+    return manifest
+
+
+def load_tour():
+    return load_tour_manifest()["frames"]
 
 
 def load_content():
@@ -440,30 +592,75 @@ def load_content():
     return locales
 
 
+def build_sitemap(locales, site_url, frames):
+    site_root = site_url.rstrip("/")
+    source_files = [
+        p for p in (
+            Path(__file__).resolve(),
+            ROOT / "content.json",
+            ROOT / "assets" / "site.css",
+            ROOT / "assets" / "site.js",
+            ROOT / "assets" / "tour" / "manifest.json",
+        ) if p.is_file()
+    ]
+    lastmod = datetime.fromtimestamp(
+        max(p.stat().st_mtime for p in source_files), tz=timezone.utc
+    ).strftime("%Y-%m-%d")
+    guide_images = []
+    for frame in frames:
+        if "before" in frame:
+            guide_images.append(f"{site_root}/assets/tour/{frame['before']['image']}")
+        guide_images.append(f"{site_root}/assets/tour/{frame['image']}")
+    entries = []
+    for page in PAGES:
+        alternates = "".join(
+            f'\n    <xhtml:link rel="alternate" hreflang="{alt}" href="{text(absolute_page_url(alt, page, site_url))}"/>'
+            for alt in locales
+        ) + f'\n    <xhtml:link rel="alternate" hreflang="x-default" href="{text(absolute_page_url("tr", page, site_url))}"/>'
+        page_images = (
+            [f"{site_root}/{SOCIAL_IMAGE}"] if page == "index.html"
+            else guide_images if page == "how-to-use.html"
+            else []
+        )
+        image_xml = "".join(
+            f"\n    <image:image><image:loc>{text(img)}</image:loc></image:image>"
+            for img in page_images
+        )
+        for code in locales:
+            loc = text(absolute_page_url(code, page, site_url))
+            entries.append(
+                f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{lastmod}</lastmod>{alternates}{image_xml}\n  </url>"
+            )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml" '
+        'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
+        + "\n".join(entries)
+        + "\n</urlset>\n"
+    )
+
+
 def build(output, site_url):
+    site_url = site_url.rstrip("/")
     parsed = urlsplit(site_url)
     if parsed.scheme != "https" or not parsed.netloc or parsed.query or parsed.fragment:
         raise ValueError("Site URL must be an absolute HTTPS URL without query or fragment.")
     output.mkdir(parents=True, exist_ok=True)
     locales = load_content()
+    tour_manifest = load_tour_manifest()
     for code in locales:
         for page in PAGES:
             destination = output / page_path(code, page)
             destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_text(render(code, page, locales, site_url), encoding="utf-8")
+            destination.write_text(render(code, page, locales, site_url, tour_manifest), encoding="utf-8")
     shutil.copytree(ROOT / "assets", output / "assets", dirs_exist_ok=True)
     shutil.copyfile(ROOT / ".nojekyll", output / ".nojekyll")
-    urls = "".join(
-        f"<url><loc>{text(absolute_page_url(code, page, site_url))}</loc></url>"
-        for code in locales for page in PAGES
-    )
     (output / "sitemap.xml").write_text(
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-        + urls + "</urlset>\n", encoding="utf-8"
+        build_sitemap(locales, site_url, tour_manifest["frames"]), encoding="utf-8"
     )
     (output / "robots.txt").write_text(
-        f"User-agent: *\nAllow: /\nSitemap: {site_url}/sitemap.xml\n", encoding="utf-8"
+        f"User-agent: *\nAllow: /\n\nSitemap: {site_url}/sitemap.xml\n", encoding="utf-8"
     )
     print(f"Built {len(locales) * len(PAGES)} pages in {output}")
 
